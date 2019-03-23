@@ -23,20 +23,19 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `userid` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
   `password` varchar(20) DEFAULT NULL,
-  `logInTime` bigint(20) DEFAULT NULL,
-  `logOutTime` bigint(20) DEFAULT NULL,
-  `Number`
-  PRIMARY KEY (`userid`)
+  PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `user`
 --
-
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 --
 -- Dumping data for table `userinfo`
 --
@@ -45,16 +44,70 @@ DROP TABLE IF EXISTS `userinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `userinfo` (
-  `userid` int(11) NOT NULL,
+  `username` varchar(20) NOT NULL,
   `logInTime` bigint(20) DEFAULT NULL,
   `logOutTime` bigint(20) DEFAULT NULL,
+  CONSTRAINT `username` FOREIGN KEY (`username`) REFERENCES `user` (`username`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `userinfo`
 --
+LOCK TABLES `userinfo` WRITE;
+/*!40000 ALTER TABLE `userinfo` DISABLE KEYS */;
+/*!40000 ALTER TABLE `userinfo` ENABLE KEYS */;
+UNLOCK TABLES;
+--
+-- Dumping data for table `taskindex`
+--
 
+DROP TABLE IF EXISTS `taskindex`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `taskindex` (
+  `username` int(11) NOT NULL,
+  `starttime` bigint(20) DEFAULT NULL,
+  `endtime` bigint(20) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  `task_id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_name` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `taskindex`
+--
+LOCK TABLES `taskindex` WRITE;
+/*!40000 ALTER TABLE `taskindex` DISABLE KEYS */;
+/*!40000 ALTER TABLE `taskindex` ENABLE KEYS */;
+UNLOCK TABLES;
+--
+-- Dumping data for table `taskinfo`
+--
+
+DROP TABLE IF EXISTS `taskinfo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `taskinfo` (
+  `task_id` int(11) NOT NULL,
+  `attack_id` int(11) NOT NULL,
+  `attack_name` varchar(60) DEFAULT NULL,
+  `times` int(11) NOT NULL,
+  `progress` int(11) DEFAULT NULL,
+  CONSTRAINT `task_id` FOREIGN KEY (`task_id`) REFERENCES `taskindex` (`task_id`),  
+  CONSTRAINT `attack_id` FOREIGN KEY (`attack_id`) REFERENCES `index` (`attack_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `taskinfo`
+--
+LOCK TABLES `taskinfo` WRITE;
+/*!40000 ALTER TABLE `taskinfo` DISABLE KEYS */;
+/*!40000 ALTER TABLE `taskinfo` ENABLE KEYS */;
+UNLOCK TABLES;
 --
 -- Table structure for table `icmphdr`
 --
@@ -92,9 +145,9 @@ DROP TABLE IF EXISTS `index`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `index` (
   `attack_id` int(11) NOT NULL AUTO_INCREMENT,
-  `attack_name` varchar(40) DEFAULT NULL,
-  `plat_info` varchar(40) DEFAULT NULL,
-  `target_info` varchar(40) DEFAULT NULL,
+  `attack_name` varchar(60) DEFAULT NULL,
+  `plat_info` varchar(20) DEFAULT NULL,
+  `target_info` varchar(20) DEFAULT NULL,
   `proto` varchar(20) DEFAULT NULL,
   `src_ip` varchar(20) DEFAULT NULL,
   `dst_ip` varchar(20) DEFAULT NULL,
@@ -110,11 +163,6 @@ CREATE TABLE `index` (
 LOCK TABLES `index` WRITE;
 /*!40000 ALTER TABLE `index` DISABLE KEYS */;
 /*!40000 ALTER TABLE `index` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `info` WRITE;
-/*!40000 ALTER TABLE `info` DISABLE KEYS */;
-/*!40000 ALTER TABLE `info` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -300,4 +348,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-05 19:53:04
+insert into `user` (username, password) VALUES ('admin', 'password');

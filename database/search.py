@@ -19,6 +19,10 @@ def listAll():
     result = dbconn.query('`index`','attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type')
     return result
 
+def verifyLog(condition):
+	result = dbconn.query('`user`', 'password', condition)
+	return result
+
 def showDetails(condition):
     timestamp_info = dbconn.query('timestamp','pkt_num, delta_sec, delta_usec',condition)
     result = []

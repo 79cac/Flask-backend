@@ -30,8 +30,15 @@ def signIn():
 	if 'username' in session:
 		return json.dumps({'status':'Already'})
 	else:
-		session['username'] = json.loads(request.get_data())['username']
-		return json.dumps({'status':'OK'})
+		username = json.loads(request.get_data())['username']
+		password = json.loads(request.get_data())['password']
+		condition = {'username': '\'' + username + '\''}
+		result = database.search.verifyLog(condition)
+		if len(result) != 0 and result[0][0] == password:
+			session['username'] = username
+			return json.dumps({'status':'OK'})
+		else:
+			return json.dumps({'status':'Wrong'})
 
 @app.route('/logOut', methods=['GET','POST'])
 def logOut():
@@ -44,7 +51,7 @@ def logOut():
 @app.route('/searchById', methods=['GET','POST'])
 def searchById():
 	if 'username' in session:
-		condition = {'attack_id': int(json.loads(request.get_data())['attackID'])}
+		condition = {'attack_id': json.loads(request.get_data())['attackID']}
 		return json.dumps({'status':'OK','data':database.search.searchByAttackId(condition)})
 	else:
 		return json.dumps({'status':'log'})
@@ -52,8 +59,8 @@ def searchById():
 @app.route('/searchByName', methods=['GET','POST'])
 def searchByName():
 	if 'username' in session:
-		condition = {'attack_name': json.loads(request.get_data())['attackName']}
-		return json.dumps({'status':'OK','data':database.search.searchByAttackId(condition)})
+		condition = {'attack_name': '\''+json.loads(request.get_data())['attackName']+'\''}
+		return json.dumps({'status':'OK','data':database.search.searchByAttackName(condition)})
 	else:
 		return json.dumps({'status':'log'})
 
@@ -78,8 +85,7 @@ def load():
 		if 'file' not in request.files:
 			return json.dumps({'status':'file'})
 		file = request.files['file']
-		filename = file.filename
-		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'temp.pcap'))
 
 		srcIP = request.form['srcIP']
 		dstIP = request.form['dstIP']
@@ -88,7 +94,7 @@ def load():
 		target_info = request.form['serverPlat']
 		proto = request.form['proto']
 		attack_info = [srcIP,dstIP,attack_name,plat_info,target_info,proto]
-		rawPcap = rdpcap(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		rawPcap = rdpcap(os.path.join(app.config['UPLOAD_FOLDER'], 'temp.pcap'))
 		if database.store.save_packet(rawPcap, attack_info):
 			return json.dumps({'status':'OK'})
 		else:

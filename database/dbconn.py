@@ -42,7 +42,7 @@ def query(table,column,condition={}):
 			else:
 				sql = 'SELECT ' + column + ' FROM ' + table + ' WHERE '
 				useAnd = False
-				for key,value in condition:
+				for key,value in condition.iteritems():
 					if useAnd == False:
 						useAnd = True
 						sql += key + ' = ' + value
