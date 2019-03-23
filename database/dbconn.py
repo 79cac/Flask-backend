@@ -32,19 +32,25 @@ def insert(table,column,data):
 	finally:
 		conn.close()
 
-def query(table,column,attack_id=0,pkt_num=0):
+def query(table,column,condition={}):
 	try:
 		conn = connection()
 		with conn.cursor() as cursor:
-			if attack_id == 0 and pkt_num == 0:
+			print condition
+			if condition == {}:
 				sql = 'SELECT ' + column + ' FROM ' + table + ';'
-			elif attack_id !=0 and pkt_num == 0:
-				sql = 'SELECT ' + column + ' FROM ' + table + \
-				' WHERE attack_id = ' + str(attack_id) + ';'
 			else:
-				sql = 'SELECT ' + column + ' FROM ' + table + \
-				' WHERE attack_id = ' + str(attack_id) + \
-				' and pkt_num = ' + str(pkt_num) + ';'
+				sql = 'SELECT ' + column + ' FROM ' + table + ' WHERE '
+				useAnd = False
+				for key,value in condition:
+					if useAnd == False:
+						useAnd = True
+						sql += key + ' = ' + value
+					else:
+						sql += ' AND ' + key + ' = ' + value
+				sql += ';'
+				print sql
+			
 			cursor.execute(sql)
 			results = cursor.fetchall()
 			return results

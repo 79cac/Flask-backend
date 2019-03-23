@@ -48,7 +48,6 @@ CREATE TABLE `userinfo` (
   `userid` int(11) NOT NULL,
   `logInTime` bigint(20) DEFAULT NULL,
   `logOutTime` bigint(20) DEFAULT NULL,
-  `numberOfTasks` int(11) DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -112,21 +111,6 @@ LOCK TABLES `index` WRITE;
 /*!40000 ALTER TABLE `index` DISABLE KEYS */;
 /*!40000 ALTER TABLE `index` ENABLE KEYS */;
 UNLOCK TABLES;
-
-DROP TABLE IF EXISTS `info`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `info` (
-  `attack_id` int(11) NOT NULL AUTO_INCREMENT,
-  `feedback` int(11) DEFAULT NULL,
-  `process_num` int(11) DEFAULT NULL,
-  PRIMARY KEY (`attack_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `info`
---
 
 LOCK TABLES `info` WRITE;
 /*!40000 ALTER TABLE `info` DISABLE KEYS */;

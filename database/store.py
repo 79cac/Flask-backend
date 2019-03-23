@@ -112,10 +112,7 @@ def save_packet(pcap, attack_info):
 	data = [attack_id, pkt_num, -1]
 	dbconn.insert('`state`','attack_id, pkt_num, next_1', data)
 	print 'store finished'
-
-	#insert into `info` table
-	data = [attack_id, attack_info[6], 1]
-	dbconn.insert('`info`','attack_id, feedback, process_num', data)
+	
 	return attack_id
 
 if __name__ == '__main__':
@@ -131,7 +128,7 @@ if __name__ == '__main__':
 	feedback = raw_input('input the feedback(1 for yes,0 for no): ')
 	sourceIP = '192.168.233.128'
 	dstIP = '192.168.233.138'
-	attack_info = [sourceIP,dstIP,attack_name,plat_info,target_info,proto,feedback]
+	attack_info = [sourceIP,dstIP,attack_name,plat_info,target_info,proto]
 	
 	print save_packet(rawPcap, attack_info)
 

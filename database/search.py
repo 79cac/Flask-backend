@@ -7,19 +7,20 @@
 
 import dbconn
 
-def searchByAttackId(id):
-	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',id)
+def searchByAttackId(condition):
+	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',condition)
 	return result
 
-def searchByAttackName(name):
-    return 
+def searchByAttackName(condition):
+	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',condition)
+	return result
 
 def listAll():
     result = dbconn.query('`index`','attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type')
     return result
 
-def showDetails(attack_id):
-    timestamp_info = dbconn.query('timestamp','pkt_num, delta_sec, delta_usec',attack_id)
+def showDetails(condition):
+    timestamp_info = dbconn.query('timestamp','pkt_num, delta_sec, delta_usec',condition)
     result = []
     for i in timestamp_info:
 		package = []
