@@ -6,9 +6,9 @@
 # @Version : $1.0$
 
 import sys
-# import attackRelease.attackControl
 import database.search
 import database.store
+import database.insert
 from flask import Flask
 from flask import request
 from flask import session
@@ -16,9 +16,6 @@ from scapy.all import *
 import os
 from functools import wraps
 import json
-import threading
-import time
-import tempfile 
 
 app = Flask(__name__)
 app.secret_key = b'_6#y2L"F4Q8z\n\xec]/'
@@ -32,9 +29,11 @@ def signIn():
 	else:
 		username = json.loads(request.get_data())['username']
 		password = json.loads(request.get_data())['password']
-		condition = {'username': '\'' + username + '\''}
+		logTime = json.loads(request.get_data())['starttime']
+		condition = {'username': username}
 		result = database.search.verifyLog(condition)
 		if len(result) != 0 and result[0][0] == password:
+			database.insert.logInTime([username,logTime])
 			session['username'] = username
 			return json.dumps({'status':'OK'})
 		else:
@@ -43,10 +42,22 @@ def signIn():
 @app.route('/logOut', methods=['GET','POST'])
 def logOut():
 	if 'username' in session:
+		username = session['username']
+		logTime = json.loads(request.get_data())['endtime']
+		database.insert.logOutTime([username,logTime])
 		session.pop('username', None)
 		return json.dumps({'status':'OK'})
 	else:
 		return json.dumps({'status':'False'})
+
+@app.route('/logInfo', methods=['GET','POST'])
+def logInfo():
+	if 'username' in session:
+		condition = {'username': session['username']}
+		result = database.search.logInfo(condition)
+		return json.dumps({'status':'OK','data':result})
+	else:
+		return json.dumps({'status':'log'})
 
 @app.route('/searchById', methods=['GET','POST'])
 def searchById():
@@ -59,7 +70,7 @@ def searchById():
 @app.route('/searchByName', methods=['GET','POST'])
 def searchByName():
 	if 'username' in session:
-		condition = {'attack_name': '\''+json.loads(request.get_data())['attackName']+'\''}
+		condition = {'attack_name': json.loads(request.get_data())['attackName']}
 		return json.dumps({'status':'OK','data':database.search.searchByAttackName(condition)})
 	else:
 		return json.dumps({'status':'log'})
@@ -102,6 +113,41 @@ def load():
 	else:
 		return json.dumps({'status':'log'})
 
+@app.route('/getFlowList', methods=['GET','POST'])
+def getFlowList():
+	if 'username' in session:
+		return json.dumps({'status':'OK','data':database.search.getFlowList()})
+	else:
+		return json.dumps({'status':'log'})
+
+@app.route('/getTaskList', methods=['GET','POST'])
+def getTaskList():
+	if 'username' in session:
+		condition = {'username': session['username']} 
+		return json.dumps({'status':'OK','data':database.search.getTaskList(condition)})
+	else:
+		return json.dumps({'status':'log'})
+
+@app.route('/addTask', methods=['GET','POST'])
+def addTask():
+	if 'username' in session:
+		username = session['username']
+		task_name = json.loads(request.get_data())['taskName']
+		attack_info = json.loads(request.get_data())['attackInfo']
+		database.insert.addTask(username,task_name,attack_info)
+		return json.dumps({'status':'OK'})
+	else:
+		return json.dumps({'status':'log'}) 
+
+@app.route('/loadTask', methods=['GET','POST'])
+def loadTask():
+	if 'username' in session:
+		username = session['username']
+		task_name = json.loads(request.get_data())['taskName']
+		condition = {'username': username, 'task_name': task_name}
+		return json.dumps({'status':'OK','data':database.search.loadTask(condition)})
+	else:
+		return json.dumps({'status':'log'}) 
 # @app.route('/release',methods=['GET','POST'])
 # def release():
 # 	data = json.loads(request.get_data())

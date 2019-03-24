@@ -66,13 +66,11 @@ DROP TABLE IF EXISTS `taskindex`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `taskindex` (
-  `username` int(11) NOT NULL,
-  `starttime` bigint(20) DEFAULT NULL,
-  `endtime` bigint(20) DEFAULT NULL,
-  `status` int(11) DEFAULT NULL,
-  `task_id` int(11) NOT NULL AUTO_INCREMENT,
-  `task_name` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`task_id`)
+  `username` varchar(20) NOT NULL,
+  `task_name` varchar(20) NOT NULL,
+  `attack_name` varchar(60) NOT NULL,
+  `times` int(11) NOT NULL,
+  `feedback` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -92,12 +90,13 @@ DROP TABLE IF EXISTS `taskinfo`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `taskinfo` (
   `task_id` int(11) NOT NULL,
-  `attack_id` int(11) NOT NULL,
-  `attack_name` varchar(60) DEFAULT NULL,
-  `times` int(11) NOT NULL,
-  `progress` int(11) DEFAULT NULL,
-  CONSTRAINT `task_id` FOREIGN KEY (`task_id`) REFERENCES `taskindex` (`task_id`),  
-  CONSTRAINT `attack_id` FOREIGN KEY (`attack_id`) REFERENCES `index` (`attack_id`)
+  `task_name` varchar(60) NOT NULL,
+  `srcIP` varchar(20) NOT NULL,
+  `dstIP` varchar(20) NOT NULL,
+  `starttime` bigint(20) NOT NULL,
+  `endtime` bigint(20) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  PRIMARY KEY (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,6 +107,28 @@ LOCK TABLES `taskinfo` WRITE;
 /*!40000 ALTER TABLE `taskinfo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `taskinfo` ENABLE KEYS */;
 UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `taskprogress`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `taskprogress` (
+  `task_id` int(11) NOT NULL,
+  `attack_name` varchar(60) NOT NULL,
+  `times` int(11) NOT NULL,
+  `feedback` int(11) NOT NULL,
+  `status` int(11) DEFAULT NULL,
+  CONSTRAINT `task_id` FOREIGN KEY (`task_id`) REFERENCES `taskinfo` (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `taskprogress`
+--
+LOCK TABLES `taskprogress` WRITE;
+/*!40000 ALTER TABLE `taskprogress` DISABLE KEYS */;
+/*!40000 ALTER TABLE `taskprogress` ENABLE KEYS */;
+UNLOCK TABLES;
+
 --
 -- Table structure for table `icmphdr`
 --
@@ -145,7 +166,7 @@ DROP TABLE IF EXISTS `index`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `index` (
   `attack_id` int(11) NOT NULL AUTO_INCREMENT,
-  `attack_name` varchar(60) DEFAULT NULL,
+  `attack_name` varchar(60) NOT NULL UNIQUE,
   `plat_info` varchar(20) DEFAULT NULL,
   `target_info` varchar(20) DEFAULT NULL,
   `proto` varchar(20) DEFAULT NULL,

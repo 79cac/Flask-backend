@@ -6,7 +6,7 @@
 # @Version : $Id$
 
 import pymysql
-
+from scapy import *
 def connection():
 	conn = pymysql.connect(host='127.0.0.1', user='root',\
 		passwd='wangyue', db='attack_flow')	
@@ -18,7 +18,12 @@ def insert(table,column,data):
 		with conn.cursor() as cursor:
 			statement = ''
 			for d in data:
-				statement += '\'' + str(d) + '\','
+				if type(d) == int:
+					statement += str(d) +  ','
+				elif type(d) == unicode or type(d) == str:
+					statement += '\'' + d + '\','
+				else:
+					pass
 			statement = statement[:-1]
 			sql = 'INSERT INTO ' + table + '( ' + \
 			column + ') VALUES (' + statement + ');'
@@ -36,20 +41,22 @@ def query(table,column,condition={}):
 	try:
 		conn = connection()
 		with conn.cursor() as cursor:
-			print condition
 			if condition == {}:
 				sql = 'SELECT ' + column + ' FROM ' + table + ';'
 			else:
 				sql = 'SELECT ' + column + ' FROM ' + table + ' WHERE '
 				useAnd = False
 				for key,value in condition.iteritems():
+					if type(value) == int:
+						value = str(value)
+					else:
+						value = '\'' + value + '\''
 					if useAnd == False:
 						useAnd = True
 						sql += key + ' = ' + value
 					else:
 						sql += ' AND ' + key + ' = ' + value
 				sql += ';'
-				print sql
 			
 			cursor.execute(sql)
 			results = cursor.fetchall()
@@ -71,6 +78,41 @@ def delete(table, column, data):
 			conn.commit()
 	except Exception as e:
 		print('Error db delete',e)
+	else:
+		pass
+	finally:
+		conn.close()
+
+def update(table, data, condition={}):
+	try:
+		conn = connection()
+		with conn.cursor() as cursor:
+			statement = ''
+			for key,value in data.iteritems():
+				if type(value) == int:
+					value = str(value)
+				else:
+					value = '\'' + value + '\''
+				statement += key + ' = ' + value + ','
+			statement = statement[:-1]
+			wherestatement = ''
+			if condition != {}:
+				useAnd = False
+				for key,value in condition.iteritems():
+					if type(value) == int:
+						value = str(value)
+					else:
+						value = '\'' + value + '\''
+					if useAnd == False:
+						useAnd = True
+						wherestatement += ' WHERE ' + key + ' = ' + value
+					else:
+						wherestatement += ' AND ' + key + ' = ' + value
+			sql = 'UPDATE ' + table + ' SET ' + statement + wherestatement + ';'			
+			cursor.execute(sql)
+			conn.commit()
+	except Exception as e:
+		print('Error db query',e)
 	else:
 		pass
 	finally:

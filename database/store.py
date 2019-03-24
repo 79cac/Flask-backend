@@ -26,9 +26,10 @@ def save_tcphdr(packet,attack_id,pkt_num):
 		proto = '6_0'
 
 	# TCP options needs encode 
+	
 	data = [attack_id, pkt_num, packet['TCP'].sport,\
 		packet['TCP'].dport, packet['TCP'].seq, packet['TCP'].ack,\
-		packet['TCP'].flags, packet['TCP'].window, packet['TCP'].dataofs,\
+		str(packet['TCP'].flags), packet['TCP'].window, packet['TCP'].dataofs,\
 		packet['TCP'].reserved, packet['TCP'].urgptr,\
 	json.dumps(packet['TCP'].options)]
 	dbconn.insert('`tcphdr`','attack_id, pkt_num, tcp_sport,' + \
@@ -57,9 +58,8 @@ def save_iphdr(packet,attack_id,pkt_num,hacker,server):
 	#insert into `iphdr` tables
 	data = [attack_id ,pkt_num, packet['IP'].version,\
 		packet['IP'].src, packet['IP'].dst, packet['IP'].tos, \
-		packet['IP'].id, packet['IP'].flags, packet['IP'].frag, \
+		packet['IP'].id, str(packet['IP'].flags), packet['IP'].frag, \
 		packet['IP'].ttl, packet['IP'].proto]
-
 	dbconn.insert('`iphdr`','attack_id, pkt_num, ip_version,' + \
 		'ip_src, ip_dst, ip_tos, ip_id, ip_flags ,ip_frag' + \
 		' ,ip_ttl ,ip_proto',data)
@@ -77,8 +77,12 @@ def save_packet(pcap, attack_info):
 	dbconn.insert('`index`','attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',data)
 
 	# get attack_id recently insert
-	attack_id = dbconn.query('`index`','attack_id')[-1][0]
-
+	result = dbconn.query('`index`','attack_id')
+	attack_id  = 1
+	for i in result:
+		if i[0] > attack_id:
+			attack_id = i[0]
+			
 	pkt_num = 1
 	num = 1
 	tmp_time = 0.0
