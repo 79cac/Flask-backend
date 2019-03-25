@@ -16,6 +16,7 @@ from scapy.all import *
 import os
 from functools import wraps
 import json
+from websocket import create_connection
 
 app = Flask(__name__)
 app.secret_key = b'_6#y2L"F4Q8z\n\xec]/'
@@ -147,17 +148,47 @@ def loadTask():
 		condition = {'username': username, 'task_name': task_name}
 		return json.dumps({'status':'OK','data':database.search.loadTask(condition)})
 	else:
-		return json.dumps({'status':'log'}) 
-# @app.route('/release',methods=['GET','POST'])
-# def release():
-# 	data = json.loads(request.get_data())
-# 	F = attackRelease.attackControl.attackInitial(data['attackID'],data['hackerIP'],data['serverIP'],data['useTimeStamp'],data['isAttacker'])
-# 	F.run()
-# 	return 'Released Successfully'
+		return json.dumps({'status':'log'})
 
-@app.route('/checkAlive',methods=['GET','POST'])
-def checkAlive():
-	return '1'
+@app.route('/publish', methods=['GET','POST'])
+def publish():
+	if 'username' in session:
+		username = session['username']
+		task_name = json.loads(request.get_data())['taskName']
+		attack_info = json.loads(request.get_data())['attackInfo']
+		starttime = json.loads(request.get_data())['starttime']
+		srcIP = json.loads(request.get_data())['srcIP']
+		dstIP = json.loads(request.get_data())['dstIP']
+		database.insert.publish(username,task_name,attack_info,starttime,srcIP,dstIP)
+		#tell websocket server to release
+		ws = create_connection("ws://192.168.233.150:1338")
+		data = {'taskName':task_name, 'attackInfo':attack_info, 'status': 0}
+		ws.send('Ins:release:' + json.dumps(data))
+		return json.dumps({'status':'OK'})
+	else:
+		return json.dumps({'status':'log'})
+
+@app.route('/getReleaseInfo', methods=['GET','POST'])
+def getReleaseInfo():
+	if 'username' in session:
+		condition = {'username': session['username']} 	
+		result = database.search.getReleaseInfo(condition)
+		# compare to ws server and renew the database	
+		return json.dumps({'status':'OK','data':result})
+	else:
+		return json.dumps({'status':'log'})
+
+@app.route('/getDevicesInfo', methods=['GET','POST'])
+def getDevicesInfo():
+	if 'username' in session:
+	    ws = create_connection("ws://192.168.233.150:1338")
+	    ws.send('Ins:device')
+	    result = ws.recv()
+	    result = json.loads(result)
+	    return json.dumps({'status':'OK','data':result})
+	else:
+	    return json.dumps({'status':'log'})
+
 
 if __name__ == '__main__':
 	app.run(debug=True,host='192.168.233.150',port=80)

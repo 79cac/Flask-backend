@@ -5,32 +5,34 @@
 # @Version : $1.0$
 
 from xml.dom.minidom import Document
+import dbconn
 
-def write2Xml(filename):
+def write2Xml(attack_id):
 	doc = Document()
+	#index table info
+	#indexinfo = dbconn.query('`index`','',condition)
+
 	#root element
 	threatSignature = doc.createElement('threatSignature')
 	doc.appendChild(threatSignature)
 
 	#first layer
-	layer1 = ['ThreatProperties','Variables','state']
+	layer1 = ['ThreatProperties','Variables','Dataflow']
 
 	for e in layer1:
 		threatSignature.appendChild(doc.createElement(e))
 
-	#second layer	
-	layer2Properties = ['name','execDesc','engineDesc','id','style','protocal']
+	#second layer	ThreatProperties
+	ThreatProperties = ['name','execPlat','enginePlat','id','protocal']
 	for i in range(len(layer2Properties)):
-		threatSignature.childNodes[0].appendChild(doc.createElement(layer2Properties[i]))
+		threatSignature.childNodes[0].appendChild(doc.createElement(ThreatProperties[i]))
 		threatSignature.childNodes[0].childNodes[i].setAttribute('value','')
 
-	VariablesName = ['sourceMac','destMac','sourceIP','destIP','sourcePort','destPort']
-	for i in range(6):
-		threatSignature.childNodes[1].appendChild(doc.createElement('NamedVar'))
-		threatSignature.childNodes[1].childNodes[i].setAttribute('name', VariablesName[i])
-		threatSignature.childNodes[1].childNodes[i].setAttribute('display', '')
-		threatSignature.childNodes[1].childNodes[i].setAttribute('type', '')
-		threatSignature.childNodes[1].childNodes[i].setAttribute('value', '')
+	#second layer	Variables
+	VariablesName = ['sourceIP','destIP','ts_type']
+	for i in range(len(VariablesName)):
+		threatSignature.childNodes[0].appendChild(doc.createElement(VariablesName[i]))
+		threatSignature.childNodes[0].childNodes[i].setAttribute('value','')
 
 	stateName = ['1','2']
 	for i in range(len(stateName)):
@@ -75,9 +77,10 @@ def write2Xml(filename):
 				tcp.setAttribute('options','')
 				tcp.setAttribute('payload','')
 
+	text = doc.toprettyxml(indent='\t', encoding='utf-8')
 
-	with open(filename, 'w') as f:
-		f.write(doc.toprettyxml(indent='\t', encoding='utf-8'))
+	with open(filename, 'w') as f:	
+		f.write(text)
 
 if __name__ == '__main__':
-	write2Xml('1.xml')
+	write2Xml(attack_id)

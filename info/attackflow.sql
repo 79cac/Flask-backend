@@ -89,7 +89,8 @@ DROP TABLE IF EXISTS `taskinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `taskinfo` (
-  `task_id` int(11) NOT NULL,
+  `username` varchar(20) NOT NULL,
+  `task_id` int(11) NOT NULL AUTO_INCREMENT,
   `task_name` varchar(60) NOT NULL,
   `srcIP` varchar(20) NOT NULL,
   `dstIP` varchar(20) NOT NULL,
@@ -112,6 +113,7 @@ DROP TABLE IF EXISTS `taskprogress`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `taskprogress` (
+  `username` varchar(20) NOT NULL,
   `task_id` int(11) NOT NULL,
   `attack_name` varchar(60) NOT NULL,
   `times` int(11) NOT NULL,

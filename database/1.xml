@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<threatSignature>
+	<ThreatProperties>
+		<name value=""/>
+		<execDesc value=""/>
+		<engineDesc value=""/>
+		<id value=""/>
+		<style value=""/>
+		<protocal value=""/>
+	</ThreatProperties>
+	<Variables>
+		<NamedVar display="" name="sourceMac" type="" value=""/>
+		<NamedVar display="" name="destMac" type="" value=""/>
+		<NamedVar display="" name="sourceIP" type="" value=""/>
+		<NamedVar display="" name="destIP" type="" value=""/>
+		<NamedVar display="" name="sourcePort" type="" value=""/>
+		<NamedVar display="" name="destPort" type="" value=""/>
+	</Variables>
+	<state>
+		<for index="1"/>
+		<for index="2"/>
+	</state>
+	<Output Feedback="False" Index="1">
+		<Ethernet dstMac="" ethType="" srcMac="">
+			<IP FragmentOffset="" Identification="" Protocol="" TTL="" TypeofService="" destIP="" flags="" srcIP="" version="">
+				<tcp ack="" dataofs="" dstport="" flags="" options="" payload="" reserved="" seq="" srcport="" urgptr="" window=""/>
+			</IP>
+		</Ethernet>
+	</Output>
+	<Output Feedback="False" Index="2">
+		<Ethernet dstMac="" ethType="" srcMac="">
+			<IP FragmentOffset="" Identification="" Protocol="" TTL="" TypeofService="" destIP="" flags="" srcIP="" version="">
+				<tcp ack="" dataofs="" dstport="" flags="" options="" payload="" reserved="" seq="" srcport="" urgptr="" window=""/>
+			</IP>
+		</Ethernet>
+	</Output>
+</threatSignature>
