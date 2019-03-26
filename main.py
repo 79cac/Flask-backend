@@ -9,6 +9,7 @@ import sys
 import database.search
 import database.store
 import database.insert
+import database.XMLGenerate
 from flask import Flask
 from flask import request
 from flask import session
@@ -154,16 +155,15 @@ def loadTask():
 def publish():
 	if 'username' in session:
 		username = session['username']
-		task_name = json.loads(request.get_data())['taskName']
 		attack_info = json.loads(request.get_data())['attackInfo']
 		starttime = json.loads(request.get_data())['starttime']
 		srcIP = json.loads(request.get_data())['srcIP']
 		dstIP = json.loads(request.get_data())['dstIP']
-		database.insert.publish(username,task_name,attack_info,starttime,srcIP,dstIP)
+		task_name = database.insert.publish(username,attack_info,starttime,srcIP,dstIP)
 		#tell websocket server to release
 		ws = create_connection("ws://192.168.233.150:1338")
-		data = {'taskName':task_name, 'attackInfo':attack_info, 'status': 0}
-		ws.send('Ins:release:' + json.dumps(data))
+		data = {'taskName':task_name, 'attackInfo':attack_info, 'srcIP':srcIP, 'dstIP':dstIP}
+		ws.send('release:' + json.dumps(data))
 		return json.dumps({'status':'OK'})
 	else:
 		return json.dumps({'status':'log'})
@@ -172,9 +172,17 @@ def publish():
 def getReleaseInfo():
 	if 'username' in session:
 		condition = {'username': session['username']} 	
-		result = database.search.getReleaseInfo(condition)
-		# compare to ws server and renew the database	
+		result = database.search.getReleaseInfo(condition)	
 		return json.dumps({'status':'OK','data':result})
+	else:
+		return json.dumps({'status':'log'})
+
+@app.route('/finishRelease', methods=['GET','POST'])
+def finishRelease():
+	if 'username' in session:
+		condition = {'username': session['username'],'task_name': json.loads(request.get_data())['taskName']}	
+		result = database.insert.finishRelease(condition)	
+		return json.dumps({'status':'OK'})
 	else:
 		return json.dumps({'status':'log'})
 
@@ -189,6 +197,13 @@ def getDevicesInfo():
 	else:
 	    return json.dumps({'status':'log'})
 
+@app.route('/xml', methods=['GET','POST'])
+def xml():
+	if 'username' in session:
+	    result = database.XMLGenerate.write2Xml(json.loads(request.get_data())['attackID'])
+	    return json.dumps({'status':'OK','data':result})
+	else:
+	    return json.dumps({'status':'log'})
 
 if __name__ == '__main__':
 	app.run(debug=True,host='192.168.233.150',port=80)

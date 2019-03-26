@@ -25,13 +25,16 @@ def addTask(username, task_name, attack_info):
         data = [username,task_name,i['flowName'],i['Number'],i['isFeedback']]
         dbconn.insert('`taskindex`','username, task_name, attack_name, times, feedback',data)
 
-def publish(username,task_name,attack_info,starttime,srcIP,dstIP):
-    if task_name == '' or task_name == None:
-        result = dbconn.query('`taskinfo`','task_id')
-        task_name = 'task-' + str(len(result) + 1)
+def finishRelease(condition,endtime):
+    dbconn.update('`taskinfo`',{'logOutTime': endtime, 'status': 1}, condition)
+
+def publish(username,attack_info,starttime,srcIP,dstIP):
+    result = dbconn.query('`taskinfo`','task_id')
+    task_name = 'task-' + str(len(result) + 1)
     print task_name
     data = [username, task_name, srcIP, dstIP, starttime, -1, 0]
     dbconn.insert('`taskinfo`','username, task_name, srcIP, dstIP, starttime, endtime, status',data)
+    return task_name
     #get task_id
     result = dbconn.query('`taskinfo`','task_id')
     task_id = len(result)

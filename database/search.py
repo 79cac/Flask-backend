@@ -54,7 +54,7 @@ def loadTask(condition):
 
 def getReleaseInfo(condition):
     result = dbconn.query('`taskinfo`','task_name, srcIP, dstIP, starttime, endtime, status', condition)
-    return result
+    return result[::-1]
 
 def showDetails(condition):
     timestamp_info = dbconn.query('timestamp','pkt_num, delta_sec, delta_usec',condition)
