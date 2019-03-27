@@ -26,7 +26,7 @@ def addTask(username, task_name, attack_info):
         dbconn.insert('`taskindex`','username, task_name, attack_name, times, feedback',data)
 
 def finishRelease(condition,endtime):
-    dbconn.update('`taskinfo`',{'logOutTime': endtime, 'status': 1}, condition)
+    dbconn.update('`taskinfo`',{'endtime': endtime, 'status': 1}, condition)
 
 def publish(username,attack_info,starttime,srcIP,dstIP):
     result = dbconn.query('`taskinfo`','task_id')

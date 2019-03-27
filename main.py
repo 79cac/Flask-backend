@@ -72,8 +72,7 @@ def searchById():
 @app.route('/searchByName', methods=['GET','POST'])
 def searchByName():
 	if 'username' in session:
-		condition = {'attack_name': json.loads(request.get_data())['attackName']}
-		return json.dumps({'status':'OK','data':database.search.searchByAttackName(condition)})
+		return json.dumps({'status':'OK','data':database.search.searchByAttackName(json.loads(request.get_data())['attackName'])})
 	else:
 		return json.dumps({'status':'log'})
 
@@ -181,7 +180,7 @@ def getReleaseInfo():
 def finishRelease():
 	if 'username' in session:
 		condition = {'username': session['username'],'task_name': json.loads(request.get_data())['taskName']}	
-		result = database.insert.finishRelease(condition)	
+		result = database.insert.finishRelease(condition,json.loads(request.get_data())['endtime'])	
 		return json.dumps({'status':'OK'})
 	else:
 		return json.dumps({'status':'log'})

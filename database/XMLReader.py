@@ -8,11 +8,11 @@
 import xml.etree.cElementTree as ET
 
 def readXML():
-	DOMTree = ET.parse("../script/wins_heap.xml")
+	DOMTree = ET.parse("1.xml")
 	root = DOMTree.getroot()
-	root = root[0]
-	for child in root:
-   		print child.tag, child.attrib
+	ThreatProperties = root[0]
+	for child in ThreatProperties:
+   		print child.tag, child.attrib['value']
 
 
 

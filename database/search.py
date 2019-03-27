@@ -6,14 +6,21 @@
 # @Version : $Id$
 
 import dbconn
+import string
 
 def searchByAttackId(condition):
 	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',condition)
 	return result
 
-def searchByAttackName(condition):
-	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type',condition)
-	return result
+def searchByAttackName(attack_name):
+	result = dbconn.query('`index`', 'attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type')
+	outcome = []
+	if len(result) == 0:
+		return result
+	for i in result:
+		if string.find(i[1],attack_name) != -1:
+			outcome.append(i)
+	return outcome
 
 def listAll():
     result = dbconn.query('`index`','attack_id, attack_name, plat_info, target_info, proto, src_ip, dst_ip, ts_type')
