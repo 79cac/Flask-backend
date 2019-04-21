@@ -20,6 +20,9 @@ def logOutTime(data):
     # we chooose the last one which has no logOutTime if this condition happens
     dbconn.update('`userinfo`', {'logOutTime':data[1]}, {'logInTime': result[-1][0]})
 
+def changePw(condition, data):
+    dbconn.update('`user`',{'password':data},condition)
+
 def addTask(username, task_name, attack_info):
     for i in attack_info:
         data = [username,task_name,i['flowName'],i['Number'],i['isFeedback']]

@@ -52,6 +52,23 @@ def logOut():
 	else:
 		return json.dumps({'status':'False'})
 
+@app.route('/changePW', methods=['GET','POST'])
+def changePW():
+	if 'username' in session:
+		username = session['username']
+		password = json.loads(request.get_data())['password']
+		newpassword = json.loads(request.get_data())['newpassword']
+		condition = {'username': username}
+		result = database.search.verifyLog(condition)
+		if len(result) != 0 and result[0][0] == password:
+			database.insert.changePw(condition, newpassword)
+			return json.dumps({'status':'OK'})
+		else:
+			return json.dumps({'status':'Password False'})
+		
+	else:
+		return json.dumps({'status':'False'})	
+
 @app.route('/logInfo', methods=['GET','POST'])
 def logInfo():
 	if 'username' in session:
